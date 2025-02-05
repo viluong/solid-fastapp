@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 
+
 class BaseRepository(ABC):
     @abstractmethod
-    def get(self, id: int):
+    async def get(self, id: int):
         pass
 
     @abstractmethod
-    def create(self, schema):
+    async def create(self, schema):
         pass

@@ -1,6 +1,7 @@
 from abc import abstractmethod, ABC
 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from typing_extensions import Optional
 
 from app.core.security import get_password_hash
@@ -11,23 +12,30 @@ from app.schemas.user import UserCreate
 
 class IUserRepository(BaseRepository):
     @abstractmethod
-    def get_by_email(self, email: str):
+    async def get_by_email(self, email: str):
         pass
 
 
 class UserRepository(IUserRepository, ABC):
-    def __init__(self, db: Session):
-        self.db = db
 
-    def create(self, user: UserCreate) -> User:
-        db_user = User(email=user.email, hashed_password=get_password_hash(user.password), name=user.name)
-        self.db.add(db_user)
-        self.db.commit()
-        self.db.refresh(db_user)
-        return db_user
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
-    def get(self, id: int) -> Optional[User]:
+    async def create(self, user: UserCreate) -> User:
+        new_user = User(
+            email=user.email,
+            hashed_password=get_password_hash(user.password),
+            name=user.name,
+        )
+
+        self.session.add(new_user)
+        await self.session.commit()
+        await self.session.refresh(new_user)
+        return new_user
+
+    async def get(self, id: int) -> Optional[User]:
         return None
 
-    def get_by_email(self, email: str) -> Optional[User]:
-        return self.db.query(User).filter(User.email == email).first()
+    async def get_by_email(self, email: str) -> Optional[User]:
+        result = await self.session.execute(select(User).where(User.email == email))
+        return result.scalars().first()
