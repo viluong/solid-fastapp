@@ -7,5 +7,5 @@ class BaseRepository(ABC):
         pass
 
     @abstractmethod
-    async def create(self, schema):
+    async def create(self, entity):
         pass
