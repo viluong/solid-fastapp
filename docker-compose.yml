@@ -6,6 +6,7 @@ services:
     container_name: fastapi_app
     ports:
       - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - .:/app
     depends_on:
@@ -33,6 +34,18 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
+  migration:
+    build: .
+    container_name: migration_app
+    volumes:
+      - .:/app
+    command: alembic upgrade head
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
