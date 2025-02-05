@@ -26,5 +26,8 @@ class UserRepository(IUserRepository, ABC):
         self.db.refresh(db_user)
         return db_user
 
+    def get(self, id: int) -> Optional[User]:
+        return None
+
     def get_by_email(self, email: str) -> Optional[User]:
         return self.db.query(User).filter(User.email == email).first()
