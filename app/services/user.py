@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from app.core.exceptions import DuplicateEmailException
 from app.core.security import get_password_hash
@@ -9,6 +9,7 @@ from app.schemas.user import UserCreate
 
 class IUserService(ABC):
 
+    @abstractmethod
     async def create_user(self, user_create: UserCreate) -> UserEntity:
         pass
 
