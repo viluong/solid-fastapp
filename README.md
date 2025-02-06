@@ -1,7 +1,7 @@
 # SOLID FastAPI application
 - Apply SOLID princible to application for readability, flexibility, reusability and scalability.
-- Some basic features: Register, Authentication with JWT, ...
-- Status: To be continue...
+- Some basic features: User Registration, Authentication with JWT, ...
+- Status: **To be continue...**
 ## Install
 1. Clone repository
 2. Run ```docker-compose up -d --build```
@@ -39,7 +39,36 @@ app/
 └── main.py                # FastAPI app initialization
 ```
 ## Explain how to apply SOLID princibles to this app
-- Single Responsibility Principle suggests each class/module should have one responsibility. So, separating routes, models, services, dependencies, and schemas makes sense. For example, register logic should be in its own module, not mixed with database setup.
+- Single Responsibility Principle suggests each class/module should have one responsibility. So, separating routes, models, services, dependencies, and schemas makes sense. For example, User Registration logic should be in its own module, not mixed with database setup.
+    ```
+    # app/services/user.py
+    
+    class IUserService(ABC):
+    
+        @abstractmethod
+        async def create_user(self, user_create: UserCreate) -> UserEntity:
+            pass
+    
+    
+    class UserService(IUserService):
+        def __init__(self, repository: IUserRepository):
+            self.repository = repository
+    
+        async def create_user(self, user_create: UserCreate) -> UserEntity:
+            user: UserEntity = await self.repository.get_by_email(user_create.email)
+            if user:
+                raise DuplicateEmailException
+    
+            new_user: UserEntity = UserEntity(
+                email=user_create.email,
+                name=user_create.name,
+                birth_date=user_create.birth_date,
+                hashed_password=get_password_hash(user_create.password),
+            )
+    
+            new_user: UserEntity = await self.repository.create(new_user)
+            return new_user
+    ```
 - Open/Closed Principle: classes should be open for extension but closed for modification. Using abstract base classes or interfaces for dependencies.<br>
   "Closed for modification" means that a class/module is complete and tested, and its internal code does not need to be changed when adding new features. Instead of modifying the code directly, you extend function throught inheritance, 
    using interfaces, or dependency injection.<br>
@@ -77,6 +106,7 @@ app/
         return user.to_entity()
 
     async def get(self, id: int) -> Optional[UserEntity]:
+        # TODO
         return None
 
     async def get_by_email(self, email: str) -> Optional[UserEntity]:
