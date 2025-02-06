@@ -39,7 +39,7 @@ app/
 └── main.py                # FastAPI app initialization
 ```
 ## Explain how to apply SOLID princibles to this app
-- Single Responsibility Principle suggests each class/module should have one responsibility. So, separating routes, models, services, dependencies, and schemas makes sense. For example, User Registration logic should be in its own module, not mixed with database setup.
+- **Single Responsibility Principle** suggests each class/module should have one responsibility. So, separating routes, models, services, dependencies, and schemas makes sense. For example, User Registration logic should be in its own module, not mixed with database setup.
     ```
     # app/services/user.py
     
@@ -142,7 +142,7 @@ app/
                 - ((today.month, today.day) < (self.birth_date.month, self.birth_date.day))
             )
     ```
-- Open/Closed Principle: classes should be open for extension but closed for modification. Using abstract base classes or interfaces for dependencies.<br>
+- **Open/Closed Principle**: classes should be open for extension but closed for modification. Using abstract base classes or interfaces for dependencies.<br>
   "Closed for modification" means that a class/module is complete and tested, and its internal code does not need to be changed when adding new features. Instead of modifying the code directly, you extend function throught inheritance, 
    using interfaces, or dependency injection.<br>
   For example: Create a ```BaseRepository``` class. When I need to get or create other data such as User or Product, I will create ```UserRepository``` class or ```ProductRepository``` class that inherits from ```BaseRepository``` and implements the get and create functions.
@@ -190,7 +190,7 @@ app/
         return user.to_entity()
   ```
   
-- Liskov Substitution: Subclasses should be substitutable for their base classes. Maybe not directly applicable here unless we have inheritance hierarchies. For services, perhaps creating a base service class (```IUserService```) that other services (```UserService```) can extend without changing behavior.
+- **Liskov Substitution:** Subclasses should be substitutable for their base classes. Maybe not directly applicable here unless we have inheritance hierarchies. For services, perhaps creating a base service class (```IUserService```) that other services (```UserService```) can extend without changing behavior.
   ```
     # app/services/user.py
     class IUserService(ABC):
@@ -218,8 +218,8 @@ app/
             new_user: UserEntity = await self.repository.create(new_user)
             return new_user
   ```
-- Interface Segregation: Clients shouldn't depend on interfaces they don't use. So, creating smaller interfaces for different operations. For example, a UserRepository interface that has methods for user operations, separate from other entities. The number of separations from other entities depends on scope of the project, which is large or small.
-- Dependency Inversion: Depend on abstractions, not concretions. Using dependency injection in FastAPI with Depends() is good here. The routes depend on abstract services, which are implemented by concrete classes that depend on abstract repositories.
+- **Interface Segregation:** Clients shouldn't depend on interfaces they don't use. So, creating smaller interfaces for different operations. For example, a UserRepository interface that has methods for user operations, separate from other entities. The number of separations from other entities depends on scope of the project, which is large or small.
+- **Dependency Inversion:** Depend on abstractions, not concretions. Using dependency injection in FastAPI with Depends() is good here. The routes depend on abstract services, which are implemented by concrete classes that depend on abstract repositories.
     ```
     # app/api/v1/endpoints/users.py
 
