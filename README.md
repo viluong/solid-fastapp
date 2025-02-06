@@ -69,6 +69,79 @@ app/
             new_user: UserEntity = await self.repository.create(new_user)
             return new_user
     ```
+    The logic for calculating a user's age will be handled in the ```UserEntity``` class instead of the ```User``` model
+    ```
+    # app/models/user.py
+    class User(Base):
+        __tablename__ = "users"
+    
+        id: int = Column(Integer, primary_key=True, index=True)
+        email: str = Column(String, unique=True, index=True)
+        name: str = Column(String(100), nullable=False)
+        birth_date: date = Column(Date, nullable=True)
+        hashed_password: str = Column(String)
+        is_active: bool = Column(Boolean, default=True)
+    
+        created_at: datetime = Column(
+            TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+        )
+    
+        updated_at: datetime = Column(
+            TIMESTAMP(timezone=True),
+            nullable=False,
+            server_default=func.now(),
+            onupdate=func.now(),
+        )
+    
+        def to_entity(self) -> UserEntity:
+            return UserEntity(
+                id=self.id,
+                email=self.email,
+                name=self.name,
+                hashed_password=self.hashed_password,
+                is_active=self.is_active,
+                birth_date=self.birth_date,
+                created_at=self.created_at,
+                updated_at=self.updated_at,
+            )
+    
+        @staticmethod
+        def from_entity(user: UserEntity) -> "User":
+            return User(
+                id=user.id,
+                email=user.email,
+                name=user.name,
+                hashed_password=user.hashed_password,
+                is_active=user.is_active,
+                birth_date=user.birth_date,
+                created_at=user.created_at,
+                updated_at=user.updated_at,
+            )
+    ```
+
+    ```
+    # app/entities/user.py
+    
+    @dataclass
+    class UserEntity:
+        id: Optional[int] = None
+        email: Optional[str] = None
+        name: Optional[str] = None
+        hashed_password: Optional[str] = None
+        is_active: Optional[bool] = None
+        birth_date: Optional[date] = None
+        created_at: Optional[datetime] = None
+        updated_at: Optional[datetime] = None
+    
+        @property
+        def age(self) -> int:
+            today = date.today()
+            return (
+                today.year
+                - self.birth_date.year
+                - ((today.month, today.day) < (self.birth_date.month, self.birth_date.day))
+            )
+    ```
 - Open/Closed Principle: classes should be open for extension but closed for modification. Using abstract base classes or interfaces for dependencies.<br>
   "Closed for modification" means that a class/module is complete and tested, and its internal code does not need to be changed when adding new features. Instead of modifying the code directly, you extend function throught inheritance, 
    using interfaces, or dependency injection.<br>
