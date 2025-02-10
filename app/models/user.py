@@ -1,6 +1,5 @@
-from datetime import date
+from datetime import date, datetime
 
-from black import datetime
 from sqlalchemy import Column, Integer, Boolean, Date, func, TIMESTAMP, String
 
 from app.entities.user import UserEntity

@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM_JWT: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
     PG_USER: str
     PG_HOST: str
     PG_DATABASE: str
