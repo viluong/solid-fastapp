@@ -13,9 +13,12 @@
 
 ```
 alembic/                   # alemic migration
+tests/                     #### Testing for app
+├── conftest.py            # config testing
+├── test_auth              # authentication test
 app/
 ├── entities/              #### For Data Transfer Object
-    ├── user.py            # User entity
+│   ├── user.py            # User entity
 ├── core/                  #### For configurations, security, logging
 │   ├── config.py          # Configuration settings
 │   ├── security.py        # JWT and password utilities
