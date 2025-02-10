@@ -1,7 +1,7 @@
 from datetime import date
 
 from black import datetime
-from sqlalchemy import Column, Integer, String, Boolean, Date, func, TIMESTAMP
+from sqlalchemy import Column, Integer, Boolean, Date, func, TIMESTAMP, String
 
 from app.entities.user import UserEntity
 from app.models.base import Base

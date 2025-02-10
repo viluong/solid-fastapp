@@ -29,7 +29,9 @@ class UserRepository(IUserRepository, ABC):
         return user.to_entity()
 
     async def get(self, id: int) -> Optional[UserEntity]:
-        return None
+        result = await self.session.execute(select(User).where(User.id == id))
+        user: User = result.scalars().first()
+        return user.to_entity() if user else None
 
     async def get_by_email(self, email: str) -> Optional[UserEntity]:
         result = await self.session.execute(select(User).where(User.email == email))
